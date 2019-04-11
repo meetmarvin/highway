@@ -27,3 +27,6 @@ echo 'Check /tmp'
 
 # Stop container and remove volume
 docker rm -vf highwayd
+
+# Todo - logout user
+docker logout
