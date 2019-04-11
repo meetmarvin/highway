@@ -6,6 +6,6 @@ service postgresql start
 
 sudo -Hiu postgres psql --command "CREATE USER graeme WITH SUPERUSER PASSWORD 'saltwater';"
 
-rake db:create && rake db:setup
+rake db:setup
 
 exec /bin/bash
