@@ -12,7 +12,7 @@ then
     then
         printf "Docker installed.\n"
     else
-        printf "Docker is currently not installed. Please install it first before running this script.\n\nhttps://docs.docker.com/install/\n\n"
+        printf "Docker is currently not installed. Please install it first before running the script.\n\nhttps://docs.docker.com/install/\n\n"
         exit 0
     fi
 else
@@ -38,7 +38,7 @@ printf "\n=================================\nPull Docker Image\n\n"
 
 printf "Pulling image...\n"
 
-docker pull docker.atlnz.lc/marvint/highway >/dev/null
+docker pull docker.atlnz.lc/marvint/highway
 
 printf "Done.\n"
 
@@ -69,7 +69,7 @@ do
   docker exec -it --user=root highway rake highway:signmic EUI64=$mac PRODUCTID=$serial >/dev/null
 
   # Prompt user where to get the certificate.
-  printf "Done.\n\nFiles saved to $DIR/$mac\n\n"
+  printf "Done.\n\nFiles saved to $DIR\n\n"
 
   # Ask user to generate another certificate.
   read -r -p "Generate another certificate? [y/n] " response
