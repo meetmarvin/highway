@@ -1,6 +1,25 @@
 #!/bin/bash
 
-printf "=================================\nDocker Login\n\nLog in to docker.atlnz.lc\n\n"
+printf "=================================\nCheck Docker Installation\n\n"
+
+# Check docker installation
+docker --version >> /dev/null
+
+if [ $? -eq 0 ]
+then
+    docker --version | grep "Docker version"
+    if [ $? -eq 0 ]
+    then
+        printf "Docker installed.\n"
+    else
+        printf "Docker is currently not installed. Please install it first before running this script.\n\nhttps://docs.docker.com/install/\n\n"
+        exit 0
+    fi
+else
+    exit 0
+fi
+
+printf "\n=================================\nDocker Login\n\nLog in to docker.atlnz.lc\n\n"
 
 # Todo - check login status
 
@@ -35,39 +54,32 @@ printf "Done.\n"
 
 printf "\n=================================\nGenerate Device Certificate\n\n"
 
-# Get MAC address. # Todo - Validation and allow AW+ 'show system mac' format
-read -p 'Enter device MAC address (xx:xx:xx:xx:xx:xx): ' mac
-
-# Get Serial Number. Todo - Validation by length
-read -p 'Enter device serial number: ' serial
-
-
 while true;
 do
-    read -r -p "Generate another certificate? [y/n] " response
-    if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]
-    then
-      # Create certificate from container
 
-      printf "\nGenerating certificate...\n"
-      docker exec -it --user=root highway rake highway:signmic EUI64=$mac PRODUCTID=$serial >/dev/null
+  # Get MAC address. # Todo - Validation and allow AW+ 'show system mac' format
+  # 001a.eb93.7b1e
+  read -p 'Enter device MAC address (xx:xx:xx:xx:xx:xx): ' mac
 
-      # Prompt user where to get the certificate. Todo - Need to update the directory (/tmp)
-      printf "Done.\n\nFiles saved to $DIR/$mac\n"
+  # Get Serial Number. Todo - Must be 16 digits
+  read -p 'Enter device serial number: ' serial
+
+  # Create certificate from container.
+  printf "\nGenerating certificate...\n"
+  docker exec -it --user=root highway rake highway:signmic EUI64=$mac PRODUCTID=$serial >/dev/null
+
+  # Prompt user where to get the certificate.
+  printf "Done.\n\nFiles saved to $DIR/$mac\n\n"
+
+  # Ask user to generate another certificate.
+  read -r -p "Generate another certificate? [y/n] " response
+  if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]
+  then
+      printf "\n ------- \n"
     else
-        exit 0
+      break
     fi
 done
-
-# # Create certificate from container
-#
-# printf "\nGenerating certificate...\n"
-# docker exec -it --user=root highway rake highway:signmic EUI64=$mac PRODUCTID=$serial >/dev/null
-#
-# # Prompt user where to get the certificate. Todo - Need to update the directory (/tmp)
-# printf "Done.\n\nFiles saved to $DIR/$mac\n"
-
-# Todo - Ask if user will create another cert. If yes, go back to line 18
 
 printf "\nStopping highway container...\n"
 # Todo - check if highway is running
@@ -75,5 +87,7 @@ docker rm -vf highway >/dev/null
 
 printf "Done.\n"
 
-printf "=================================\nDocker Logout\n\n"
+printf "\n=================================\nDocker Logout\n\n"
+
+# Logout
 docker logout docker.atlnz.lc
