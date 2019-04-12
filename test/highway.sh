@@ -26,7 +26,9 @@ printf "\n=================================\nDocker Login\n\nLog in to docker.at
 # Login to docker
 docker login docker.atlnz.lc
 
-printf "\nStopping existing highway container...\n"
+printf "\n=================================\nCheck Existing Container\n\n"
+
+printf "Stopping any existing highway container...\n"
 # Todo - check if highway is running
 docker rm -vf highway >/dev/null
 
