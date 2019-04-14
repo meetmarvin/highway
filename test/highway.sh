@@ -3,19 +3,23 @@
 printf "=================================\nCheck Docker Installation\n\n"
 
 # Check docker installation
-docker --version >> /dev/null
 
-if [ $? -eq 0 ]
-then
-    docker --version | grep "Docker version"
-    if [ $? -eq 0 ]
-    then
-        printf "Docker installed.\n"
+if [[ $(which docker) && $(docker --version) ]]; then
+    docker --version | grep version
+    printf "\nDocker installed.\n"
+
+    printf "\nTest Docker installation\n\n'docker run hello-world'\n"
+    docker run hello-world
+
+    if [ $? -eq 0 ]; then
+        printf "Docker working properly.\n"
     else
-        printf "Docker is currently not installed. Please install it first before running the script.\n\nhttps://docs.docker.com/install/\n\n"
+        printf "\nDocker not working properly. Make sure it is working properly before running this script.\n\n"
         exit 0
     fi
-else
+
+  else
+    printf "Docker is currently not installed.\n\nInstall it first before running this script.\n\nSee https://docs.docker.com/install/\n\n"
     exit 0
 fi
 
@@ -71,7 +75,7 @@ do
   docker exec -it --user=root highway rake highway:signmic EUI64=$mac PRODUCTID=$serial >/dev/null
 
   # Prompt user where to get the certificate.
-  printf "Done.\n\nFiles saved to $DIR\n\n"
+  printf "Done.\n\nFiles saved to $DIR/$mac\n\n"
 
   # Ask user to generate another certificate.
   read -r -p "Generate another certificate? [y/n] " response
@@ -84,7 +88,7 @@ do
 done
 
 printf "\nStopping highway container...\n"
-# Todo - check if highway is running
+# Stop container
 docker rm -vf highway >/dev/null
 
 printf "Done.\n"
