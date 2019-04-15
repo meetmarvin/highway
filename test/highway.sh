@@ -76,19 +76,18 @@ do
       fi
   done
 
-  # # Get and validate serial number
-  # while true;
-  # do
-  #   read -p 'Enter device serial number: ' serial
-  #   echo ${#serial}
-  #   if [ $(echo ${#serial}) -eq 16 ]
-  #   then
-  #       break
-  #     else
-  #       printf "Invalid Serial number. Please try again.\n\n"
-  #     fi
-  # done
-
+  # Get and validate serial number
+  while true;
+  do
+    read -p 'Enter device serial number: ' serial
+    echo ${#serial}
+    if [ $(echo ${#serial}) -eq 16 ]
+    then
+        break
+      else
+        printf "Invalid Serial number. Please try again.\n\n"
+      fi
+  done
 
   # Create certificate from container.
   printf "\nGenerating certificate...\n"
