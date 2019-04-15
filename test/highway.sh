@@ -105,7 +105,7 @@ do
   read -r -p "Generate another certificate? [y/n] " response
   if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]
   then
-      printf "\n ------- \n"
+      printf "\n=================================\nGenerate Device Certificate\n\n"
     else
       break
     fi
