@@ -80,7 +80,6 @@ do
   while true;
   do
     read -p 'Enter device serial number: ' serial
-    echo ${#serial}
     if [ $(echo ${#serial}) -eq 16 ]
     then
         break
@@ -92,6 +91,12 @@ do
   # Create certificate from container.
   printf "\nGenerating certificate...\n"
   docker exec -it --user=root highway rake highway:signmic EUI64=$mac PRODUCTID=$serial >/dev/null
+
+  # Remove colon and make uppercase
+  mac="$( echo $mac | sed -e 's/://g' | awk '{print toupper($0)}' )"
+
+  # Change permission to current user
+  sudo chown -R $USER $DIR/$mac
 
   # Prompt user where to get the certificate
   printf "Done.\n\nFiles saved to $DIR/$mac\n\n"
