@@ -8,8 +8,8 @@ if [[ $(which docker) && $(docker --version) ]]; then
     docker --version | grep version
     printf "\nDocker installed.\n"
 
-    printf "\nTest Docker installation\n\n'docker run hello-world'\n"
-    docker run hello-world
+    printf "\nTest Docker installation...\n\n"
+    docker run hello-world > /dev/null
 
     if [ $? -eq 0 ]; then
         printf "Docker working properly.\n"
@@ -25,10 +25,12 @@ fi
 
 printf "\n=================================\nDocker Login\n\nLog in to docker.atlnz.lc\n\n"
 
-# Todo - check login status
+# Login
 
-# Login to docker
-docker login docker.atlnz.lc
+until docker login docker.atlnz.lc
+do
+  printf "\nLog in to docker.atlnz.lc\n\n"
+done
 
 printf "\n=================================\nCheck Existing Container\n\n"
 
