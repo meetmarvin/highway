@@ -8,11 +8,11 @@ if [[ $(which docker) && $(docker --version) ]]; then
     docker --version | grep version
     printf "\nDocker installed.\n"
 
-    printf "\nTest Docker installation...\n\n"
+    printf "\nTest Docker installation...\n"
     docker run hello-world > /dev/null
 
     if [ $? -eq 0 ]; then
-        printf "Docker working properly.\n"
+        printf "\nDocker working properly.\n"
     else
         printf "\nDocker not working properly. Make sure it is working properly before running this script.\n\n"
         exit 0
@@ -42,8 +42,7 @@ printf "Done.\n"
 
 printf "\n=================================\nPull Docker Image\n\n"
 
-# Pull and run the image with name 'highway' and add volume. Todo - Need to update the directory (/tmp)
-
+# Pull and run the image with name 'highway' and add volume
 printf "Pulling image...\n"
 
 docker pull docker.atlnz.lc/marvint/highway
@@ -65,21 +64,40 @@ printf "\n=================================\nGenerate Device Certificate\n\n"
 while true;
 do
 
-  # Get MAC address. # Todo - Validation and allow AW+ 'show system mac' format
-  # 001a.eb93.7b1e
-  read -p 'Enter device MAC address (xx:xx:xx:xx:xx:xx): ' mac
+  # Get and validate MAC address
+  while true;
+  do
+    read -p 'Enter device MAC address (xx:xx:xx:xx:xx:xx): ' mac
+    if [ `echo $mac | egrep "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$"` ]
+    then
+        break
+      else
+        printf "Invalid MAC address. Please try again.\n\n"
+      fi
+  done
 
-  # Get Serial Number. Todo - Must be 16 digits
-  read -p 'Enter device serial number: ' serial
+  # # Get and validate serial number
+  # while true;
+  # do
+  #   read -p 'Enter device serial number: ' serial
+  #   echo ${#serial}
+  #   if [ $(echo ${#serial}) -eq 16 ]
+  #   then
+  #       break
+  #     else
+  #       printf "Invalid Serial number. Please try again.\n\n"
+  #     fi
+  # done
+
 
   # Create certificate from container.
   printf "\nGenerating certificate...\n"
   docker exec -it --user=root highway rake highway:signmic EUI64=$mac PRODUCTID=$serial >/dev/null
 
-  # Prompt user where to get the certificate.
+  # Prompt user where to get the certificate
   printf "Done.\n\nFiles saved to $DIR/$mac\n\n"
 
-  # Ask user to generate another certificate.
+  # Ask user to generate another certificate
   read -r -p "Generate another certificate? [y/n] " response
   if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]
   then
@@ -90,6 +108,7 @@ do
 done
 
 printf "\nStopping highway container...\n"
+
 # Stop container
 docker rm -vf highway >/dev/null
 
